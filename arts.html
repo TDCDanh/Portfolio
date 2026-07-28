@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="vi" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ioblanoisuled's Arts</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                light: "#f8fafc",
+                dark: "#0f172a",
+              },
+            },
+            fontFamily: {
+              sans: ['"DM Sans"', "sans-serif"],
+              syne: ['"Syne"', "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+      rel="stylesheet"
+    />
+    <!-- FontAwesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      /* --- Custom Fonts --- */
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: pan-y;
+        overflow: hidden;
+      }
+
+      /* 3D Perspective Container */
+      .deck-container {
+        perspective: 1200px;
+        perspective-origin: center center;
+      }
+
+      /* Card Transitions */
+      .card-smooth {
+        transition:
+          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          opacity 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .card-swiping {
+        transition: none !important;
+      }
+      .drag-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+      }
+      .card-shadow-light {
+        box-shadow:
+          0 20px 30px -10px rgba(0, 0, 0, 0.12),
+          0 10px 15px -5px rgba(0, 0, 0, 0.06);
+      }
+      .card-shadow-dark {
+        box-shadow:
+          0 25px 35px -10px rgba(0, 0, 0, 0.6),
+          0 10px 20px -5px rgba(0, 0, 0, 0.4);
+      }
+
+      /* --- Ambient Background --- */
+      .ambient-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background: #f1f5f9; /* Light slate */
+        transition: background 0.8s ease;
+      }
+      .dark .ambient-bg {
+        background: #020617; /* Very dark slate */
+      }
+
+      /* --- Mouse Tracking Glow --- */
+      .mouse-glow {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 70vw;
+        height: 70vw;
+        max-width: 800px;
+        max-height: 800px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: -1;
+        filter: blur(120px);
+        background: radial-gradient(
+          circle,
+          rgba(129, 140, 248, 0.5) 0%,
+          rgba(192, 132, 252, 0.2) 50%,
+          transparent 80%
+        );
+        opacity: 0.8;
+        will-change: transform;
+        transition: opacity 0.5s ease;
+        /* Transform is handled by JS for smooth lerping */
+      }
+      .dark .mouse-glow {
+        background: radial-gradient(
+          circle,
+          rgba(79, 70, 229, 0.4) 0%,
+          rgba(217, 70, 239, 0.15) 50%,
+          transparent 80%
+        );
+        opacity: 0.6;
+      }
+
+      /* --- Liquid Glass Button --- */
+      .btn-liquid-glass {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow:
+          0 8px 32px 0 rgba(31, 38, 135, 0.1),
+          inset 0 0 15px rgba(255, 255, 255, 0.5);
+        color: #334155;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+        animation: liquidShape 4s ease-in-out infinite alternate;
+      }
+      .dark .btn-liquid-glass {
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow:
+          0 8px 32px 0 rgba(0, 0, 0, 0.4),
+          inset 0 0 15px rgba(255, 255, 255, 0.1);
+        color: #f8fafc;
+      }
+
+      .btn-liquid-glass:hover {
+        transform: scale(1.1);
+        box-shadow:
+          0 12px 40px 0 rgba(31, 38, 135, 0.2),
+          inset 0 0 20px rgba(255, 255, 255, 0.8);
+      }
+      .dark .btn-liquid-glass:hover {
+        box-shadow:
+          0 12px 40px 0 rgba(0, 0, 0, 0.6),
+          inset 0 0 20px rgba(255, 255, 255, 0.25);
+      }
+
+      @keyframes liquidShape {
+        0% {
+          border-radius: 45% 55% 40% 60% / 55% 45% 60% 40%;
+        }
+        50% {
+          border-radius: 60% 40% 55% 45% / 45% 60% 40% 55%;
+        }
+        100% {
+          border-radius: 40% 60% 45% 55% / 60% 40% 55% 45%;
+        }
+      }
+    </style>
+  </head>
+
+  <body
+    class="h-full relative text-slate-800 dark:text-slate-100 transition-colors duration-300 flex flex-col justify-between selection:bg-indigo-500 selection:text-white"
+  >
+    <!-- Backgrounds -->
+    <div class="ambient-bg"></div>
+    <div id="mouse-glow" class="mouse-glow"></div>
+
+    <!-- Minimalist Header -->
+    <header class="w-full p-6 md:p-8 flex justify-between items-center z-50">
+      <!-- Site Title -->
+      <h1
+        class="text-2xl md:text-4xl font-syne font-extrabold tracking-tight text-slate-900 dark:text-white flex items-center gap-3 drop-shadow-sm"
+      >
+        <span
+          class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block animate-pulse"
+        ></span>
+        ioblanoisuled's Arts
+      </h1>
+
+      <!-- Top Right Controls -->
+      <div class="flex items-center">
+        <!-- Theme Toggle Button (Liquid Glass) -->
+        <button
+          id="theme-toggle"
+          title="Đổi giao diện sáng/tối"
+          class="btn-liquid-glass"
+        >
+          <i
+            id="theme-icon"
+            class="fa-solid fa-moon text-lg z-10 relative pointer-events-none"
+          ></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Center Stage -->
+    <main
+      class="flex-1 flex flex-col justify-center items-center relative px-4 select-none"
+    >
+      <!-- Interactive Card Stack Arena -->
+      <div
+        class="deck-container relative w-[300px] h-[400px] sm:w-[360px] sm:h-[480px] md:w-[420px] md:h-[560px] flex items-center justify-center"
+      >
+        <!-- Cards will be dynamically injected here by JS -->
+        <div
+          id="deck"
+          class="relative w-full h-full flex items-center justify-center"
+        ></div>
+      </div>
+
+      <!-- Interaction Helper Hint -->
+      <div
+        class="mt-10 flex items-center gap-2 text-xs md:text-sm font-medium text-slate-500 dark:text-slate-400 transition-opacity duration-500 animate-pulse"
+      >
+        <i class="fa-solid fa-hand-pointer text-indigo-500"></i>
+        <span>Kéo thẻ hoặc dùng phím mũi tên để chuyển </span>
+      </div>
+    </main>
+
+    <!-- Minimal Footer / Counter -->
+    <footer
+      class="p-6 text-center text-xs font-medium text-slate-500 dark:text-slate-400 z-10 drop-shadow-sm"
+    >
+      <span id="art-counter">Artwork 1 of 6</span>
+    </footer>
+
+    <!-- Fullscreen Zoom Modal -->
+    <div
+      id="zoom-modal"
+      class="fixed inset-0 bg-black/90 z-50 opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4"
+    >
+      <button
+        id="close-zoom"
+        class="absolute top-6 right-6 text-white text-3xl p-3 hover:text-indigo-400 transition-colors drop-shadow-lg z-50 outline-none"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img
+        id="zoom-img"
+        class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl scale-95 transition-transform duration-300 relative z-40"
+        src=""
+        alt="Full view"
+      />
+      <div
+        id="zoom-title"
+        class="absolute bottom-8 text-white text-base font-semibold bg-black/60 px-6 py-2.5 rounded-full backdrop-blur-md z-40 shadow-xl border border-white/10"
+      ></div>
+    </div>
+
+    <script>
+      // Sample Artwork Gallery Collection
+      const artworks = [
+        { id: "1", title: " ", url: "src/assets/pics/pic1.jpg" },
+        { id: "2", title: " ", url: "src/assets/pics/pic2.jpg" },
+        { id: "3", title: " ", url: "src/assets/pics/pic3.jpg" },
+        { id: "4", title: " ", url: "src/assets/pics/pic4.jpg" },
+        { id: "5", title: " ", url: "src/assets/pics/pic5.jpg" },
+        { id: "6", title: " ", url: "src/assets/pics/pic6.jpg" },
+        { id: "7", title: " ", url: "src/assets/pics/pic7.jpg" },
+        { id: "8", title: " ", url: "src/assets/pics/pic8.jpg" },
+        { id: "9", title: " ", url: "src/assets/pics/pic9.jpg" },
+        { id: "10", title: " ", url: "src/assets/pics/pic10.jpg" },
+        { id: "11", title: " ", url: "src/assets/pics/pic11.jpg" },
+        { id: "12", title: " ", url: "src/assets/pics/pic12.jpg" },
+        { id: "13", title: " ", url: "src/assets/pics/pic13.jpg" },
+        { id: "14", title: " ", url: "src/assets/pics/pic14.jpg" },
+      ];
+
+      // DOM Elements
+      const deckContainer = document.getElementById("deck");
+      const themeToggleBtn = document.getElementById("theme-toggle");
+      const themeIcon = document.getElementById("theme-icon");
+      const counterEl = document.getElementById("art-counter");
+      const zoomModal = document.getElementById("zoom-modal");
+      const zoomImg = document.getElementById("zoom-img");
+      const zoomTitle = document.getElementById("zoom-title");
+      const closeZoomBtn = document.getElementById("close-zoom");
+
+      // Drag State Variables
+      let isDragging = false;
+      let startX = 0,
+        startY = 0;
+      let currentX = 0,
+        currentY = 0;
+      let activeCardEl = null;
+
+      // --- STREAMING_CHUNK:Theme Initialization & Toggle ---
+      function initTheme() {
+        if (
+          localStorage.theme === "dark" ||
+          (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+          themeIcon.className =
+            "fa-solid fa-sun text-lg text-yellow-300 z-10 relative pointer-events-none";
+        } else {
+          document.documentElement.classList.remove("dark");
+          themeIcon.className =
+            "fa-solid fa-moon text-lg text-slate-700 z-10 relative pointer-events-none";
+        }
+      }
+
+      themeToggleBtn.addEventListener("click", () => {
+        if (document.documentElement.classList.contains("dark")) {
+          document.documentElement.classList.remove("dark");
+          localStorage.theme = "light";
+          themeIcon.className =
+            "fa-solid fa-moon text-lg text-slate-700 z-10 relative pointer-events-none";
+        } else {
+          document.documentElement.classList.add("dark");
+          localStorage.theme = "dark";
+          themeIcon.className =
+            "fa-solid fa-sun text-lg text-yellow-300 z-10 relative pointer-events-none";
+        }
+        renderDeck();
+      });
+
+      // --- STREAMING_CHUNK:Mouse Tracking Animation (Lerp) ---
+      const glowEl = document.getElementById("mouse-glow");
+      let targetMouseX = window.innerWidth / 2;
+      let targetMouseY = window.innerHeight / 2;
+      let currentGlowX = targetMouseX;
+      let currentGlowY = targetMouseY;
+
+      window.addEventListener("mousemove", (e) => {
+        targetMouseX = e.clientX;
+        targetMouseY = e.clientY;
+      });
+
+      window.addEventListener(
+        "touchmove",
+        (e) => {
+          if (e.touches.length > 0) {
+            targetMouseX = e.touches[0].clientX;
+            targetMouseY = e.touches[0].clientY;
+          }
+        },
+        { passive: true },
+      );
+
+      function animateGlow() {
+        // Lerping for smooth follow effect
+        currentGlowX += (targetMouseX - currentGlowX) * 0.06;
+        currentGlowY += (targetMouseY - currentGlowY) * 0.06;
+
+        glowEl.style.transform = `translate3d(${currentGlowX}px, ${currentGlowY}px, 0) translate(-50%, -50%)`;
+        requestAnimationFrame(animateGlow);
+      }
+
+      // --- STREAMING_CHUNK:Deck Rendering Logic ---
+      function getTransformForIndex(i) {
+        if (i === 0) return "translate3d(0, 0, 0) scale(1) rotate(0deg)";
+        if (i === 1)
+          return "translate3d(0px, 18px, -20px) scale(0.95) rotate(-3.5deg)";
+        if (i === 2)
+          return "translate3d(0px, 34px, -40px) scale(0.90) rotate(4deg)";
+        return "translate3d(0px, 48px, -60px) scale(0.85) rotate(-2deg)";
+      }
+
+      function renderDeck(isReversing = false) {
+        deckContainer.innerHTML = "";
+
+        // Render visible cards (up to 4 visible cards in stack)
+        const maxVisible = Math.min(4, artworks.length);
+
+        for (let i = maxVisible - 1; i >= 0; i--) {
+          const art = artworks[i];
+          const card = document.createElement("div");
+
+          const isDark = document.documentElement.classList.contains("dark");
+          const shadowClass = isDark ? "card-shadow-dark" : "card-shadow-light";
+
+          card.className = `absolute w-full h-full rounded-2xl overflow-hidden bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-white/60 dark:border-white/10 p-3 flex flex-col card-smooth ${shadowClass}`;
+          card.dataset.index = i;
+
+          // Handle smooth entrance for backwards navigation, otherwise static positioning
+          if (isReversing) {
+            if (i === 0) {
+              card.style.transform =
+                "translate3d(-300px, -50px, 0) rotate(-15deg)";
+              card.style.opacity = "0";
+              setTimeout(() => {
+                card.style.transform = getTransformForIndex(0);
+                card.style.opacity = "1";
+              }, 20);
+            } else {
+              card.style.transform = getTransformForIndex(i - 1);
+              setTimeout(() => {
+                card.style.transform = getTransformForIndex(i);
+              }, 20);
+            }
+          } else {
+            card.style.transform = getTransformForIndex(i);
+          }
+
+          card.style.zIndex = maxVisible - i;
+
+          // Card inner markup
+          card.innerHTML = `
+                    <div class="relative w-full h-full rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800">
+                        <img src="${art.url}" alt="${art.title}" class="w-full h-full object-cover pointer-events-none" loading="lazy" onerror="this.src='https://placehold.co/600x800/1e293b/ffffff?text=Art+Image'">
+                        <div class="drag-overlay"></div>
+                        <div class="absolute bottom-0 inset-x-0 p-5 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-white opacity-90">
+                            <h2 class="text-base sm:text-lg font-bold tracking-wide drop-shadow-md">${art.title}</h2>
+                        </div>
+                    </div>
+                `;
+
+          // Attach gesture listeners only to top card
+          if (i === 0) {
+            attachDragEvents(card);
+            // Double click for fullscreen zoom
+            card.addEventListener("dblclick", () => openZoom(art));
+          }
+
+          deckContainer.appendChild(card);
+        }
+
+        counterEl.textContent = `1 trong số ${artworks.length} `;
+      }
+
+      // --- STREAMING_CHUNK:Handling Gestures & Drag Mechanics ---
+      function animateCardsForward() {
+        const cards = deckContainer.children;
+        for (let i = 0; i < cards.length; i++) {
+          const card = cards[i];
+          const idx = parseInt(card.dataset.index);
+          if (idx > 0) {
+            card.style.transform = getTransformForIndex(idx - 1);
+          }
+        }
+      }
+
+      function attachDragEvents(card) {
+        activeCardEl = card;
+        card.addEventListener("mousedown", startDrag);
+        window.addEventListener("mousemove", moveDrag);
+        window.addEventListener("mouseup", endDrag);
+
+        card.addEventListener("touchstart", startDrag, { passive: true });
+        window.addEventListener("touchmove", moveDrag, { passive: false });
+        window.addEventListener("touchend", endDrag);
+      }
+
+      function getEventPos(e) {
+        if (e.touches && e.touches.length > 0)
+          return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        return { x: e.clientX, y: e.clientY };
+      }
+
+      function startDrag(e) {
+        if (!activeCardEl) return;
+        isDragging = true;
+        const pos = getEventPos(e);
+        startX = pos.x;
+        startY = pos.y;
+        currentX = pos.x;
+        currentY = pos.y;
+
+        activeCardEl.classList.remove("card-smooth");
+        activeCardEl.classList.add("card-swiping");
+      }
+
+      function moveDrag(e) {
+        if (!isDragging || !activeCardEl) return;
+
+        const pos = getEventPos(e);
+        currentX = pos.x;
+        currentY = pos.y;
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+
+        if (e.cancelable && Math.abs(deltaX) > 10) e.preventDefault();
+
+        const rotation = deltaX * 0.08;
+        activeCardEl.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) rotate(${rotation}deg)`;
+      }
+
+      function endDrag() {
+        if (!isDragging || !activeCardEl) return;
+        isDragging = false;
+
+        const deltaX = currentX - startX;
+        const deltaY = currentY - startY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const swipeThreshold = 100;
+
+        if (distance > swipeThreshold) {
+          // Swipe Out
+          const flyX = deltaX * 3;
+          const flyY = deltaY * 3;
+          const rotation = deltaX * 0.15;
+
+          activeCardEl.style.transition =
+            "transform 0.4s ease-out, opacity 0.3s ease-out";
+          activeCardEl.style.transform = `translate3d(${flyX}px, ${flyY}px, 0) rotate(${rotation}deg)`;
+          activeCardEl.style.opacity = "0";
+
+          // Smoothly animate the rest of the cards into their next positions before re-rendering
+          animateCardsForward();
+
+          setTimeout(() => {
+            const topArt = artworks.shift();
+            artworks.push(topArt);
+            renderDeck();
+          }, 300);
+        } else {
+          // Snap Back
+          activeCardEl.classList.remove("card-swiping");
+          activeCardEl.classList.add("card-smooth");
+          activeCardEl.style.transform =
+            "translate3d(0, 0, 0) scale(1) rotate(0deg)";
+        }
+
+        window.removeEventListener("mousemove", moveDrag);
+        window.removeEventListener("mouseup", endDrag);
+        window.removeEventListener("touchmove", moveDrag);
+        window.removeEventListener("touchend", endDrag);
+      }
+
+      // --- STREAMING_CHUNK:Keyboard Shortcuts & Fullscreen Modal ---
+      window.addEventListener("keydown", (e) => {
+        if (zoomModal.classList.contains("opacity-100")) return;
+
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " ") {
+          const cardToCycle = deckContainer.querySelector('[data-index="0"]');
+          if (cardToCycle) {
+            cardToCycle.style.transition =
+              "transform 0.4s ease-out, opacity 0.3s ease-out";
+            cardToCycle.style.transform =
+              "translate3d(300px, 100px, 0) rotate(20deg)";
+            cardToCycle.style.opacity = "0";
+
+            animateCardsForward();
+
+            setTimeout(() => {
+              const topArt = artworks.shift();
+              artworks.push(topArt);
+              renderDeck();
+            }, 300);
+          }
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          const lastArt = artworks.pop();
+          artworks.unshift(lastArt);
+          renderDeck(true); // Pass true to trigger reverse animation
+        }
+      });
+
+      function openZoom(art) {
+        zoomImg.src = art.url;
+        zoomTitle.textContent = art.title;
+        zoomModal.classList.remove("opacity-0", "pointer-events-none");
+        zoomModal.classList.add("opacity-100");
+        zoomImg.classList.remove("scale-95");
+        zoomImg.classList.add("scale-100");
+      }
+
+      function closeZoom() {
+        zoomModal.classList.remove("opacity-100");
+        zoomModal.classList.add("opacity-0", "pointer-events-none");
+        zoomImg.classList.remove("scale-100");
+        zoomImg.classList.add("scale-95");
+        setTimeout(() => {
+          zoomImg.src = "";
+        }, 300); // clear img after animation
+      }
+
+      closeZoomBtn.addEventListener("click", closeZoom);
+      zoomModal.addEventListener("click", (e) => {
+        if (e.target === zoomModal) closeZoom();
+      });
+
+      // --- STREAMING_CHUNK:Initializing App ---
+      window.onload = function () {
+        initTheme();
+        renderDeck();
+        animateGlow(); // Start mouse tracking animation loop
+      };
+    </script>
+  </body>
+</html>
