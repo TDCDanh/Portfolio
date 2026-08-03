@@ -29,3 +29,22 @@
 - [x] 3. Update `index.html` - Add `<div id="model-viewer-root">` inside `#projects` section with section label
 - [x] 4. Update `src/main.jsx` - Import and mount `ModelViewer` component
 - [x] 5. Build verified - Success ✅
+
+## Add Hotvitlon Project to Projects Carousel
+
+## Steps
+
+- [x] 1. Copy `index.html` + 300 frame images from `C:\Users\PC\Downloads\ezgif-28510ce4df1ce231-jpg` to `public/hotvitlon/`
+- [x] 2. Add Hotvitlon project card to SET 1 of `index.html` carousel
+- [x] 3. Add Hotvitlon project card to SET 2 (duplicate for seamless loop)
+- [x] 4. Build verified - Success ✅
+
+## Fix Broken Images & Hotvitlon Landing Page
+
+## Steps
+
+- [x] 1. Create `public/hotvitlon/index.html` — GOLDEN EGG landing page (300-frame scroll animation, relative frame paths)
+- [x] 2. Update `index.html` — convert project-card image paths + hotvitlon link to relative paths (SET 1)
+- [x] 3. Update `index.html` — convert project-card image paths + hotvitlon link to relative paths (SET 2)
+- [x] 4. Update `arts.html` — convert 14 artwork image paths `/Portfolio/assets/pics/picN.jpg` → `assets/pics/picN.jpg`
+- [x] 5. Build verified - Success ✅

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GOLDEN EGG — Premium Balut Drink</title>
+  <meta name="description" content="Golden Egg — premium balut drink. Rich in natural protein, pure nutrition, distinctive Vietnamese heritage flavor."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    ::selection{background:rgba(255,255,255,.2)}
+    html{height:100%;scroll-behavior:auto}
+    body{font-family:'Inter',system-ui,sans-serif;background:#0a0a0a;color:#fff;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+    #bg-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0}
+    #bg-overlay{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(160deg,rgba(0,0,0,.44) 0%,rgba(0,0,0,.08) 38%,rgba(0,0,0,.08) 62%,rgba(0,0,0,.55) 100%)}
+
+    nav#navbar{position:fixed;top:0;left:0;right:0;z-index:50;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(10,10,10,.5);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);opacity:0;transform:translateY(-12px);transition:opacity 600ms ease-out,transform 600ms ease-out}
+    nav#navbar.in{opacity:1;transform:translateY(0)}
+    .logo{display:flex;align-items:center;gap:10px;font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;letter-spacing:.02em;color:#fff;text-decoration:none}
+    .logo svg{width:22px;height:22px;flex-shrink:0}
+    .nav-links{display:none;list-style:none;gap:32px}
+    @media(min-width:768px){.nav-links{display:flex}}
+    .nav-links a{font-size:.82rem;color:rgba(255,255,255,.8);text-decoration:none;letter-spacing:.02em;transition:color 300ms}
+    .nav-links a:hover{color:#fff}
+    .nav-cta{font-size:.78rem;font-family:'Inter',sans-serif;letter-spacing:.04em;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.12);backdrop-filter:blur(12px);color:#fff;cursor:pointer;transition:background 300ms}
+    .nav-cta:hover{background:rgba(255,255,255,.22)}
+
+    #credit{position:fixed;bottom:22px;left:24px;z-index:50;display:flex;flex-direction:column;gap:3px;opacity:0;transform:translateY(8px);transition:opacity 800ms ease-out 1.2s,transform 800ms ease-out 1.2s}
+    #credit.in{opacity:1;transform:translateY(0)}
+    .credit-line{width:28px;height:1px;background:rgba(255,255,255,.28);margin-bottom:4px}
+    .credit-name{font-family:'Playfair Display',serif;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+    .credit-sub{font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.38)}
+
+    #progress-bar{position:fixed;top:62px;left:0;height:1px;z-index:49;background:rgba(255,255,255,.55);width:0%;transition:width 60ms linear}
+
+    #content{position:relative;z-index:10}
+    .zone{position:relative}
+    .z1{height:200vh}.z2{height:200vh}.z3{height:190vh}.z4{height:190vh}.z5{height:160vh}
+    .spacer{height:80vh}
+
+    .sticky-panel{position:sticky;top:0;height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:space-between;padding:96px 20px 48px}
+    @media(min-width:640px){.sticky-panel{padding:110px 32px 52px}}
+    @media(min-width:768px){.sticky-panel{padding:96px 48px 52px}}
+
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity 750ms ease-out,transform 750ms ease-out;will-change:transform,opacity}
+    .reveal.in{opacity:1;transform:translateY(0)}
+
+    .badge{display:inline-flex;align-items:center;padding:6px 14px;background:rgba(255,255,255,.13);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-left:2px solid rgba(255,255,255,.85);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.88)}
+    .glass-card{background:rgba(255,255,255,.1);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:24px}
+    .top-line{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)}
+
+    .headline{font-family:'Playfair Display',serif;font-size:clamp(2.6rem,7vw,5rem);font-weight:800;line-height:1.05;letter-spacing:-.01em;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.55)}
+    .headline-italic{font-family:'Playfair Display',serif;font-style:italic;font-weight:400}
+    .service-tag{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.88);text-shadow:0 1px 5px rgba(0,0,0,.5)}
+
+    .top-row{display:flex;flex-direction:column;gap:28px}
+    @media(min-width:640px){.top-row{flex-direction:row;justify-content:space-between;align-items:flex-start}}
+    .bottom-row{display:flex;flex-direction:column;gap:32px}
+    @media(min-width:768px){.bottom-row{flex-direction:row;align-items:flex-end;justify-content:space-between}}
+    .s-bottom{flex:1;display:flex;flex-direction:column;gap:40px;justify-content:flex-end}
+    @media(min-width:768px){.s-bottom{flex-direction:row;align-items:flex-end;gap:56px}}
+
+    .card{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.13);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;max-width:315px}
+    .card-icon{width:76px;height:92px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,rgba(255,205,70,.18),rgba(210,110,30,.28));border:1px solid rgba(255,255,255,.12)}
+
+    .btn-primary{display:inline-flex;align-items:center;gap:6px;background:#fff;color:#000;border:none;border-radius:999px;padding:12px 26px;font-size:.82rem;font-weight:600;letter-spacing:.03em;cursor:pointer;font-family:'Inter',sans-serif;transition:background 300ms}
+    .btn-primary:hover{background:rgba(255,255,255,.87)}
+    .btn-secondary{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:12px 26px;font-size:.82rem;letter-spacing:.03em;cursor:pointer;font-family:'Inter',sans-serif;backdrop-filter:blur(8px);transition:background 300ms}
+    .btn-secondary:hover{background:rgba(255,255,255,.2)}
+
+    .cap-panel{width:100%;max-width:400px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.09);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:0 22px}
+    .cap-row{display:flex;gap:18px;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.1);cursor:default}
+    .cap-row:last-child{border-bottom:none}
+    .cap-chevron{color:rgba(255,255,255,.32);flex-shrink:0;margin-top:2px;transition:transform 300ms,color 300ms}
+    .cap-row:hover .cap-chevron{transform:translateX(3px);color:rgba(255,255,255,.85)}
+
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.14);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.05);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+    .stat-cell{padding:22px 18px;background:rgba(255,255,255,.07);display:flex;flex-direction:column;gap:6px;border-right:1px solid rgba(255,255,255,.1)}
+    .stat-cell:last-child{border-right:none}
+    .stat-num{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.4)}
+
+    .process-list{display:flex;flex-direction:column}
+    .process-item{display:flex;gap:20px;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+    .process-item:last-child{border-bottom:none}
+    .process-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:800;color:rgba(255,255,255,.15);flex-shrink:0;line-height:1;margin-top:2px;width:36px}
+
+    .bar-track{height:3px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:6px}
+    .bar-fill{height:100%;background:linear-gradient(90deg,rgba(255,198,50,.8),rgba(255,140,30,.6));border-radius:2px}
+
+    .final-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:32px}
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  <div id="bg-overlay"></div>
+  <div id="progress-bar"></div>
+
+  <div id="credit">
+    <div class="credit-line"></div>
+    <div class="credit-name">ioblanoisuled</div>
+    <div class="credit-sub">Made by Antigravity</div>
+  </div>
+
+  <nav id="navbar">
+    <a href="#" class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="13.5" rx="6" ry="8"/>
+        <ellipse cx="12" cy="14.5" rx="2.8" ry="2.8" fill="rgba(255,200,60,.55)" stroke="rgba(255,185,40,.75)" stroke-width="1.2"/>
+      </svg>
+      Golden Egg
+    </a>
+    <ul class="nav-links">
+      <li><a href="#">Products <sup style="font-size:9px;color:rgba(255,255,255,.45)">3</sup></a></li>
+      <li><a href="#">Nutrition</a></li>
+      <li><a href="#">Heritage</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+    <button class="nav-cta">Order Now</button>
+  </nav>
+
+  <div id="content">
+
+    <!-- ZONE 1 — HERO -->
+    <div class="zone z1">
+      <div class="sticky-panel">
+        <div class="top-row">
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div class="service-tag reveal" style="transition-delay:150ms">/ NATURAL PROTEIN</div>
+            <div class="service-tag reveal" style="transition-delay:270ms">/ PREMIUM NUTRITION</div>
+            <div class="service-tag reveal" style="transition-delay:390ms">/ PURE ENERGY</div>
+          </div>
+          <p class="reveal" style="max-width:265px;font-size:1.05rem;font-weight:300;line-height:1.76;color:rgba(255,255,255,.92);text-shadow:0 1px 6px rgba(0,0,0,.5);transition-delay:300ms">
+            A drink crafted from authentic Vietnamese balut eggs — blending timeless heritage with modern innovation to deliver perfect nutrition for your body.
+          </p>
+        </div>
+        <div class="bottom-row">
+          <div>
+            <div class="badge reveal" style="margin-bottom:22px;transition-delay:150ms">Trusted by 50,000+ Customers</div>
+            <h1 class="headline reveal" style="transition-delay:280ms">Rich.<br>Pure.<br>Nourishing.</h1>
+          </div>
+          <div class="card reveal" style="transition-delay:420ms">
+            <div class="card-icon">
+              <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                <ellipse cx="22" cy="25" rx="13" ry="16" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.22)" stroke-width="1.3"/>
+                <ellipse cx="22" cy="27" rx="7.5" ry="7.5" fill="rgba(255,198,50,.48)" stroke="rgba(255,175,30,.65)" stroke-width="1.1"/>
+              </svg>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;padding-right:8px">
+              <p style="font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:#fff">Speak with a Specialist</p>
+              <p style="font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.5)">Nutrition Expert</p>
+              <button class="btn-primary" style="margin-top:8px;font-size:.74rem;padding:8px 16px">
+                Book a Free Call
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spacer" aria-hidden="true"></div>
+
+    <!-- ZONE 2 — HERITAGE -->
+    <div class="zone z2" style="position:relative">
+      <div class="top-line"></div>
+      <div class="sticky-panel">
+        <div class="top-row">
+          <div class="badge reveal" style="transition-delay:100ms">Vietnamese Heritage</div>
+          <p class="reveal" style="max-width:285px;font-size:1.05rem;font-weight:300;line-height:1.76;color:rgba(255,255,255,.9);text-shadow:0 1px 6px rgba(0,0,0,.5);transition-delay:200ms">
+            For centuries, balut has been a cornerstone of Vietnamese culture — a symbol of vitality, shared at dawn by farmers and families alike.
+          </p>
+        </div>
+        <div class="s-bottom">
+          <div style="max-width:460px">
+            <h2 class="headline reveal" style="transition-delay:160ms">Born from<br><span class="headline-italic">tradition.</span><br>Crafted for today.</h2>
+            <p class="reveal" style="margin-top:22px;max-width:400px;font-size:.88rem;font-weight:300;line-height:1.82;color:rgba(255,255,255,.72);text-shadow:0 1px 4px rgba(0,0,0,.4);transition-delay:300ms">
+              What began as a beloved street-food ritual in the alleys of Hanoi and Saigon has been elevated into a refined daily supplement — honoring its roots while meeting the demands of the modern world.
+            </p>
+            <div class="stat-grid reveal" style="margin-top:28px;transition-delay:420ms">
+              <div class="stat-cell">
+                <div class="stat-num">50+</div>
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:rgba(255,255,255,.5)">Years of craft</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-num">100%</div>
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:rgba(255,255,255,.5)">Authentic source</div>
+              </div>
+              <div class="stat-cell">
+                <div class="stat-num">0</div>
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:rgba(255,255,255,.5)">Additives added</div>
+              </div>
+            </div>
+          </div>
+          <div class="glass-card reveal" style="max-width:340px;transition-delay:360ms">
+            <p style="font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.5);margin-bottom:14px">Origin Story</p>
+            <p style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;line-height:1.4;color:#fff;margin-bottom:14px">"From the Mekong Delta to the world's table."</p>
+            <p style="font-size:.84rem;font-weight:300;line-height:1.72;color:rgba(255,255,255,.65)">Our eggs are sourced exclusively from free-range ducks raised in the fertile wetlands of the Mekong Delta — ensuring superior nutrition and an unmistakably rich, authentic flavor.</p>
+            <div style="margin-top:18px;display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,198,50,.3);border:1px solid rgba(255,198,50,.5);display:flex;align-items:center;justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,198,50,.9)" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              </div>
+              <div>
+                <p style="font-size:.8rem;font-weight:500;color:#fff">Mekong Delta, Vietnam</p>
+                <p style="font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.1em">Certified Origin</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spacer" aria-hidden="true"></div>
+
+    <!-- ZONE 3 — THE PROCESS -->
+    <div class="zone z3" style="position:relative">
+      <div class="top-line"></div>
+      <div class="sticky-panel">
+        <div class="top-row">
+          <div class="badge reveal" style="transition-delay:100ms">Nutritional Excellence</div>
+          <p class="reveal" style="max-width:285px;font-size:1.05rem;font-weight:300;line-height:1.76;color:rgba(255,255,255,.9);text-shadow:0 1px 6px rgba(0,0,0,.5);transition-delay:200ms">
+            Precision engineering meets ancient wisdom — every drop is formulated to deliver maximum bioavailability and flavour integrity.
+          </p>
+        </div>
+        <div class="s-bottom">
+          <div style="max-width:440px">
+            <h2 class="headline reveal" style="transition-delay:160ms">Every drop,<br>precisely<br><span class="headline-italic">formulated.</span></h2>
+            <div class="glass-card reveal" style="margin-top:28px;transition-delay:320ms">
+              <div class="process-list">
+                <div class="process-item">
+                  <div class="process-num">01</div>
+                  <div>
+                    <p style="font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;margin-bottom:5px">Cold-Pressed Extraction</p>
+                    <p style="font-size:.82rem;font-weight:300;line-height:1.65;color:rgba(255,255,255,.62)">Sub-40°C extraction preserves all heat-sensitive amino acids, enzymes, and vitamins in their natural state.</p>
+                  </div>
+                </div>
+                <div class="process-item">
+                  <div class="process-num">02</div>
+                  <div>
+                    <p style="font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;margin-bottom:5px">Triple-Stage Filtration</p>
+                    <p style="font-size:.82rem;font-weight:300;line-height:1.65;color:rgba(255,255,255,.62)">Micro-filtration removes impurities while retaining the full nutritional profile and signature flavour depth.</p>
+                  </div>
+                </div>
+                <div class="process-item">
+                  <div class="process-num">03</div>
+                  <div>
+                    <p style="font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fff;margin-bottom:5px">Zero-Additive Sealing</p>
+                    <p style="font-size:.82rem;font-weight:300;line-height:1.65;color:rgba(255,255,255,.62)">Nitrogen-flushed bottles lock in freshness for 18 months — no preservatives, no compromise.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px;max-width:290px">
+            <p class="reveal" style="font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:rgba(255,255,255,.45);transition-delay:260ms">Per 250ml Serving</p>
+            <div class="reveal" style="display:flex;flex-direction:column;gap:16px;transition-delay:360ms">
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:7px">
+                  <span style="font-size:.8rem;color:rgba(255,255,255,.8)">Protein</span>
+                  <span style="font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:#fff">18g</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width:82%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:7px">
+                  <span style="font-size:.8rem;color:rgba(255,255,255,.8)">Amino Acids</span>
+                  <span style="font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:#fff">9 Essential</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width:95%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:7px">
+                  <span style="font-size:.8rem;color:rgba(255,255,255,.8)">Vitamins & Minerals</span>
+                  <span style="font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:#fff">12 Types</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:7px">
+                  <span style="font-size:.8rem;color:rgba(255,255,255,.8)">Calories</span>
+                  <span style="font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:#fff">95 kcal</span>
+                </div>
+                <div class="bar-track"><div class="bar-fill" style="width:38%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spacer" aria-hidden="true"></div>
+
+    <!-- ZONE 4 — BENEFITS -->
+    <div class="zone z4" style="position:relative">
+      <div class="top-line"></div>
+      <div class="sticky-panel">
+        <div class="top-row">
+          <div class="badge reveal" style="transition-delay:100ms">Outstanding Benefits</div>
+          <p class="reveal" style="max-width:285px;font-size:1.05rem;font-weight:300;line-height:1.76;color:rgba(255,255,255,.9);text-shadow:0 1px 6px rgba(0,0,0,.5);transition-delay:200ms">
+            Every bottle is more than a drink — it is the essence distilled from authentic balut eggs, delivering sustained vitality from within.
+          </p>
+        </div>
+        <div class="s-bottom">
+          <div style="max-width:460px">
+            <h2 class="headline reveal" style="transition-delay:160ms">Discover the<br><span class="headline-italic">distinctive</span><br>flavor.</h2>
+            <p class="reveal" style="margin-top:22px;max-width:380px;font-size:.88rem;font-weight:300;line-height:1.82;color:rgba(255,255,255,.72);text-shadow:0 1px 4px rgba(0,0,0,.4);transition-delay:310ms">
+              From carefully sourced ingredients to cutting-edge processing, every sip delivers authentic Vietnamese flavor alongside outstanding nutritional value — refined, balanced, and remarkable.
+            </p>
+            <div class="reveal" style="margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;transition-delay:420ms">
+              <button class="btn-primary">View Products <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+              <button class="btn-secondary">Free Consultation</button>
+            </div>
+          </div>
+          <div class="cap-panel">
+            <div class="cap-row reveal" style="transition-delay:280ms">
+              <span style="font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.45);padding-top:3px;flex-shrink:0">01</span>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fff">Natural Protein</p>
+                  <svg class="cap-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                <p style="margin-top:7px;font-size:.83rem;font-weight:300;line-height:1.68;color:rgba(255,255,255,.62)">Rich in protein and all 9 essential amino acids from authentic balut eggs — supporting muscle development and energy recovery.</p>
+              </div>
+            </div>
+            <div class="cap-row reveal" style="transition-delay:400ms">
+              <span style="font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.45);padding-top:3px;flex-shrink:0">02</span>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fff">Complete Nourishment</p>
+                  <svg class="cap-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                <p style="margin-top:7px;font-size:.83rem;font-weight:300;line-height:1.68;color:rgba(255,255,255,.62)">12 vitamins and minerals that nourish your body from the inside out, naturally fortifying your immune system every single day.</p>
+              </div>
+            </div>
+            <div class="cap-row reveal" style="transition-delay:520ms">
+              <span style="font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.45);padding-top:3px;flex-shrink:0">03</span>
+              <div style="flex:1">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <p style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fff">Heritage Flavor</p>
+                  <svg class="cap-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                <p style="margin-top:7px;font-size:.83rem;font-weight:300;line-height:1.68;color:rgba(255,255,255,.62)">A distinctly Vietnamese taste, delicately balanced for effortless daily enjoyment — preserving the soul of tradition in every sip.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spacer" aria-hidden="true"></div>
+
+    <!-- ZONE 5 — FINAL CTA -->
+    <div class="zone z5" style="position:relative">
+      <div class="top-line"></div>
+      <div class="sticky-panel" style="justify-content:center">
+        <div class="final-center">
+          <div class="badge reveal" style="transition-delay:80ms">Begin Your Journey</div>
+          <h2 class="headline reveal" style="text-align:center;max-width:680px;transition-delay:200ms">
+            Experience the<br><span class="headline-italic">extraordinary.</span>
+          </h2>
+          <p class="reveal" style="max-width:440px;text-align:center;font-size:.95rem;font-weight:300;line-height:1.82;color:rgba(255,255,255,.68);transition-delay:330ms">
+            Join over 50,000 customers who have made Golden Egg a part of their daily ritual. Ancient wisdom. Modern precision. One remarkable bottle.
+          </p>
+          <div class="reveal" style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;transition-delay:460ms">
+            <button class="btn-primary" style="padding:14px 32px;font-size:.88rem">
+              Shop the Collection
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-secondary" style="padding:14px 32px;font-size:.88rem">Book a Free Tasting</button>
+          </div>
+          <p class="reveal" style="font-family:'Playfair Display',serif;font-style:italic;font-size:.85rem;color:rgba(255,255,255,.3);transition-delay:580ms;letter-spacing:.04em">
+            Golden Egg — where heritage meets excellence.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    var TOTAL=300,canvas=document.getElementById('bg-canvas'),ctx=canvas.getContext('2d'),imgs=new Array(TOTAL),curF=0,tgtF=0;
+    function frameSrc(n){return 'hotvitlon/ezgif-frame-'+String(n).padStart(3,'0')+'.jpg';}
+    function drawCover(img){var cw=canvas.width,ch=canvas.height,iw=img.naturalWidth,ih=img.naturalHeight,s=Math.max(cw/iw,ch/ih);ctx.clearRect(0,0,cw,ch);ctx.drawImage(img,(cw-iw*s)/2,(ch-ih*s)/2,iw*s,ih*s);}
+    function drawFrame(i){var img=imgs[Math.min(Math.max(i,0),TOTAL-1)];if(img)drawCover(img);}
+    function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;drawFrame(Math.round(curF));}
+    function getTgt(){var max=document.body.scrollHeight-window.innerHeight;return Math.min(Math.max(window.scrollY/max,0),1)*(TOTAL-1);}
+    (function loop(){
+      tgtF=getTgt();
+      var d=tgtF-curF;curF+=Math.abs(d)<0.3?d:d*0.12;
+      drawFrame(Math.round(curF));
+      var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+      document.getElementById('progress-bar').style.width=Math.min(pct,100)+'%';
+      requestAnimationFrame(loop);
+    })();
+    function preload(){for(var i=0;i<TOTAL;i++){(function(idx){var img=new Image();img.src=frameSrc(idx+1);img.onload=function(){imgs[idx]=img;if(idx===0){resize();drawFrame(0);}};img.onerror=function(){};})(i);}}
+    window.addEventListener('resize',resize);resize();preload();
+    setTimeout(function(){document.getElementById('navbar').classList.add('in');document.getElementById('credit').classList.add('in');},120);
+    var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  </script>
+</body>
+</html>
