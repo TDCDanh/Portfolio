@@ -48,3 +48,12 @@
 - [x] 3. Update `index.html` — convert project-card image paths + hotvitlon link to relative paths (SET 2)
 - [x] 4. Update `arts.html` — convert 14 artwork image paths `/Portfolio/assets/pics/picN.jpg` → `assets/pics/picN.jpg`
 - [x] 5. Build verified - Success ✅
+
+## Deploy to GitHub Pages (https://tdcdanh.github.io/portfolio/)
+
+## Steps
+
+- [x] 1. Create `.github/workflows/deploy.yml` — auto-build & deploy to GitHub Pages on push to `main`
+- [x] 2. Repo renamed `Portfolio` → `portfolio` (lowercase) → update git remote URL
+- [x] 3. Update `vite.config.js` base path from `/Portfolio/` to `/portfolio/`
+- [x] 4. Build verified - Asset paths now use lowercase `/portfolio/` ✅

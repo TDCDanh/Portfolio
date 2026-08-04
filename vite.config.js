@@ -3,8 +3,8 @@ import react from "@vitejs/plugin-react";
 import { resolve } from "node:path";
 
 export default defineConfig({
-  // Repository GitHub Pages is served from https://tdcdanh.github.io/Portfolio/.
-  base: "/Portfolio/",
+  // Repository GitHub Pages is served from https://tdcdanh.github.io/portfolio/.
+  base: "/portfolio/",
   plugins: [react()],
   assetsInclude: ["**/*.glb"],
   build: {
